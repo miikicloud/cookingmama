@@ -1,0 +1,2643 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Cooking Mama - Burger Lezat Mama</title>
+  <meta name="description" content="Game memasak interaktif ala Cooking Mama: Potong, Aduk, dan Panggang Burger Lezat Mama!">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #ff5277;
+      --primary-light: #ff7597;
+      --primary-dark: #e03259;
+      --secondary: #ffb834;
+      --secondary-light: #ffd56b;
+      --accent: #4cd3a1;
+      --accent-dark: #2ba879;
+      --bg-cream: #fff9e6;
+      --kitchen-pink: #ffeef2;
+      --text-dark: #4a2c2c;
+      --text-muted: #8c6e6e;
+      --white: #ffffff;
+      --shadow-soft: 0 8px 24px rgba(230, 80, 115, 0.18);
+      --shadow-hard: 0 6px 0px rgba(74, 44, 44, 0.25);
+      --font-display: 'Fredoka', 'Nunito', 'Comic Sans MS', cursive, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font-display);
+      background-color: #ffcad4;
+      background-image: 
+        radial-gradient(#ff85a1 15%, transparent 16%),
+        radial-gradient(#ff85a1 15%, transparent 16%);
+      background-size: 32px 32px;
+      background-position: 0 0, 16px 16px;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 12px;
+      color: var(--text-dark);
+      overflow-x: hidden;
+    }
+
+    /* Main Container (Mama's Cooking Screen) */
+    .game-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--bg-cream);
+      border-radius: 36px;
+      border: 6px solid #fff;
+      box-shadow: 0 20px 40px rgba(184, 52, 85, 0.25), 0 8px 0 #e5989b;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    /* Gingham Top Ribbon */
+    .gingham-ribbon {
+      height: 16px;
+      background-color: var(--primary);
+      background-image: 
+        linear-gradient(45deg, rgba(255,255,255,0.3) 25%, transparent 25%),
+        linear-gradient(-45deg, rgba(255,255,255,0.3) 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, rgba(255,255,255,0.3) 75%),
+        linear-gradient(-45deg, transparent 75%, rgba(255,255,255,0.3) 75%);
+      background-size: 16px 16px;
+      border-bottom: 3px solid #ff3366;
+    }
+
+    /* Top HUD / Status Bar */
+    .hud-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 18px 8px;
+      background: #fff;
+      border-bottom: 3px dashed #ffd1dc;
+      gap: 10px;
+    }
+
+    .hud-mama-corner {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .mama-avatar-small {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 3px solid var(--primary);
+      background: #ffe5ec;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+      transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .mama-avatar-small.bounce {
+      transform: scale(1.15) rotate(5deg);
+    }
+
+    .hud-title-box {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hud-title-box h1 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1.2;
+    }
+
+    .hud-step-badge {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hud-stats {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .star-counter {
+      background: #fff5d7;
+      border: 2px solid var(--secondary);
+      border-radius: 20px;
+      padding: 4px 10px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 700;
+      font-size: 15px;
+      color: #996300;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .star-icon {
+      color: #ffb800;
+      filter: drop-shadow(0 2px 2px rgba(255, 184, 0, 0.4));
+      animation: starTwinkle 2.5s infinite ease-in-out;
+    }
+
+    @keyframes starTwinkle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2) rotate(10deg); }
+    }
+
+    .sound-btn {
+      background: #f0f0f0;
+      border: 2px solid #ddd;
+      border-radius: 50%;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.15s ease;
+    }
+
+    .sound-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Timer Strip */
+    .timer-wrap {
+      padding: 6px 18px 8px;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .timer-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .timer-track {
+      flex: 1;
+      height: 14px;
+      background: #ffe3e8;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 2px solid #ffb3c1;
+      position: relative;
+    }
+
+    .timer-bar {
+      height: 100%;
+      width: 100%;
+      background: linear-gradient(90deg, #4cd3a1, #ffcd3c, #ff4d6d);
+      border-radius: 8px;
+      transition: width 0.1s linear;
+    }
+
+    .timer-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-dark);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    /* Main Stage Screen Container */
+    .stage-container {
+      position: relative;
+      min-height: 440px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: linear-gradient(180deg, #fff7ea 0%, #ffe9d6 100%);
+      overflow: hidden;
+    }
+
+    /* Floating Feedback Overlay (Perfect! Good! Bad!) */
+    .feedback-banner {
+      position: absolute;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%) scale(0);
+      padding: 10px 28px;
+      border-radius: 50px;
+      font-size: 26px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      z-index: 100;
+      pointer-events: none;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+      border: 4px solid #fff;
+      transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      white-space: nowrap;
+    }
+
+    .feedback-banner.show {
+      transform: translateX(-50%) scale(1);
+    }
+
+    .feedback-perfect {
+      background: linear-gradient(135deg, #ff4d6d, #ff9f1c);
+      color: #fff;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    .feedback-good {
+      background: linear-gradient(135deg, #2ec4b6, #06d6a0);
+      color: #fff;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    .feedback-bad {
+      background: linear-gradient(135deg, #6c757d, #495057);
+      color: #fff;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+
+    /* Instruction Badge */
+    .stage-prompt {
+      position: absolute;
+      top: 14px;
+      background: rgba(255, 255, 255, 0.95);
+      border: 2px solid var(--primary-light);
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      box-shadow: 0 4px 10px rgba(255, 82, 119, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 10;
+      animation: pulseSubtle 2s infinite ease-in-out;
+    }
+
+    @keyframes pulseSubtle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    /* ========================================================
+       STAGE 1: CHOPPING MINIGAME
+       ======================================================== */
+    .chopping-arena {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .cutting-board {
+      width: 320px;
+      height: 240px;
+      background: #e3a857;
+      background-image: 
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 30px, transparent 30px, transparent 60px),
+        linear-gradient(to bottom, #cf9143, #be7e31);
+      border-radius: 28px;
+      border: 8px solid #94581a;
+      box-shadow: 0 12px 0 #703e0b, 0 20px 25px rgba(0,0,0,0.2);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+      transition: transform 0.05s ease;
+    }
+
+    .cutting-board.hit {
+      transform: scale(0.97) translateY(4px);
+    }
+
+    .board-groove {
+      position: absolute;
+      inset: 12px;
+      border: 3px solid rgba(112, 62, 11, 0.35);
+      border-radius: 18px;
+      pointer-events: none;
+    }
+
+    /* Meat & Food to chop */
+    .food-on-board {
+      position: relative;
+      width: 170px;
+      height: 110px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .meat-block {
+      width: 150px;
+      height: 85px;
+      background: #e63946;
+      border-radius: 24px;
+      border: 4px solid #ba181b;
+      box-shadow: inset 0 6px 12px rgba(255,255,255,0.35), 0 6px 0 #850e11;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: all 0.15s ease;
+    }
+
+    /* Marbling & slices */
+    .meat-marbling {
+      position: absolute;
+      width: 60px;
+      height: 8px;
+      background: #ffb3c1;
+      border-radius: 10px;
+      transform: rotate(-15deg);
+      opacity: 0.8;
+    }
+    .meat-marbling.m2 {
+      width: 45px;
+      bottom: 20px;
+      right: 25px;
+      transform: rotate(20deg);
+    }
+
+    /* Onion garnish on the side */
+    .veggie-onion {
+      position: absolute;
+      top: -20px;
+      right: -25px;
+      width: 44px;
+      height: 44px;
+      background: #c77dff;
+      border: 3px solid #7b2cbf;
+      border-radius: 50% 50% 40% 40%;
+      box-shadow: 0 4px 0 #5a189a;
+    }
+
+    /* Knife in chopping stage */
+    .chef-knife {
+      position: absolute;
+      top: -65px;
+      right: 25px;
+      width: 160px;
+      height: 110px;
+      pointer-events: none;
+      transform-origin: 140px 10px;
+      transform: rotate(25deg);
+      transition: transform 0.08s cubic-bezier(0.1, 0.9, 0.2, 1);
+      z-index: 20;
+      filter: drop-shadow(4px 10px 8px rgba(0,0,0,0.25));
+    }
+
+    .chef-knife.chop-down {
+      transform: rotate(-30deg) translateY(35px) translateX(-20px);
+    }
+
+    .knife-blade {
+      position: absolute;
+      left: 0;
+      top: 30px;
+      width: 115px;
+      height: 52px;
+      background: linear-gradient(180deg, #f8f9fa 0%, #dee2e6 60%, #ced4da 100%);
+      border-radius: 4px 4px 60px 4px;
+      border: 3px solid #6c757d;
+      box-shadow: inset 0 -3px 0 #adb5bd;
+    }
+
+    .knife-edge {
+      position: absolute;
+      bottom: 0;
+      left: 10px;
+      right: 15px;
+      height: 4px;
+      background: #ffffff;
+      border-radius: 2px;
+      box-shadow: 0 0 6px #fff;
+    }
+
+    .knife-handle {
+      position: absolute;
+      right: 5px;
+      top: 25px;
+      width: 55px;
+      height: 24px;
+      background: #6a040f;
+      border-radius: 8px;
+      border: 3px solid #370617;
+      box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
+    }
+
+    .chop-guide-arrow {
+      position: absolute;
+      bottom: -35px;
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--primary-dark);
+      background: #fff;
+      padding: 6px 16px;
+      border-radius: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      animation: bouncePrompt 1.2s infinite ease-in-out;
+    }
+
+    @keyframes bouncePrompt {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .chop-particles {
+      position: absolute;
+      pointer-events: none;
+      inset: 0;
+    }
+
+    /* Flying slice bit */
+    .slice-bit {
+      position: absolute;
+      background: #e63946;
+      border: 2px solid #9d0208;
+      border-radius: 5px;
+      pointer-events: none;
+      animation: flyParticle 0.4s ease-out forwards;
+    }
+
+    @keyframes flyParticle {
+      0% { transform: translate(0, 0) scale(1) rotate(0deg); opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)) scale(0.6) rotate(var(--rot)); opacity: 0; }
+    }
+
+    /* ========================================================
+       STAGE 2: STIRRING / MIXING MINIGAME
+       ======================================================== */
+    .stirring-arena {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      touch-action: none;
+      position: relative;
+    }
+
+    .mixing-bowl-wrap {
+      position: relative;
+      width: 290px;
+      height: 290px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mixing-bowl-outer {
+      width: 270px;
+      height: 270px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #a0c4ff 0%, #70a6ff 100%);
+      border: 10px solid #538dff;
+      box-shadow: 0 16px 0 #3a6ecc, 0 25px 35px rgba(0,0,0,0.25);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .mixing-bowl-inner {
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: #3967b8;
+      box-shadow: inset 0 8px 20px rgba(0,0,0,0.5);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Batter vortex inside */
+    .batter-swirl {
+      width: 190px;
+      height: 190px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #e07a5f 20%, #d95d39 60%, #c1441e 100%);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+      transition: transform 0.08s linear;
+    }
+
+    .batter-rings {
+      position: absolute;
+      border: 4px dashed rgba(255, 230, 200, 0.4);
+      border-radius: 50%;
+    }
+    .batter-ring-1 { width: 140px; height: 140px; }
+    .batter-ring-2 { width: 90px; height: 90px; }
+
+    .batter-bits {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0.7;
+    }
+
+    /* Wooden spoon/whisk handle */
+    .mixing-spoon {
+      position: absolute;
+      width: 24px;
+      height: 140px;
+      background: linear-gradient(90deg, #d4a373, #bc6c25);
+      border-radius: 12px;
+      border: 3px solid #8c4a17;
+      top: 15px;
+      transform-origin: 12px 130px;
+      box-shadow: 4px 6px 10px rgba(0,0,0,0.35);
+      pointer-events: none;
+      z-index: 25;
+      transition: transform 0.05s linear;
+    }
+
+    .spoon-head {
+      position: absolute;
+      bottom: -15px;
+      left: -12px;
+      width: 44px;
+      height: 48px;
+      background: #d4a373;
+      border: 3px solid #8c4a17;
+      border-radius: 50%;
+    }
+
+    .swirl-direction-guide {
+      position: absolute;
+      width: 250px;
+      height: 250px;
+      border: 4px dashed rgba(255, 255, 255, 0.75);
+      border-radius: 50%;
+      pointer-events: none;
+      animation: spinGuide 4s linear infinite;
+    }
+
+    @keyframes spinGuide {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ========================================================
+       STAGE 3: GRILLING MINIGAME
+       ======================================================== */
+    .grill-arena {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .pan-wrapper {
+      position: relative;
+      width: 290px;
+      height: 260px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .frying-pan {
+      width: 240px;
+      height: 240px;
+      border-radius: 50%;
+      background: radial-gradient(circle, #3d3a45 40%, #26242c 85%, #18171c 100%);
+      border: 10px solid #4a4753;
+      box-shadow: 0 16px 0 #1b1a20, 0 25px 30px rgba(0,0,0,0.35);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: visible;
+    }
+
+    .pan-handle {
+      position: absolute;
+      right: -80px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 90px;
+      height: 28px;
+      background: #1f1e24;
+      border-radius: 8px 16px 16px 8px;
+      border: 4px solid #111;
+      box-shadow: 0 6px 0 #000;
+      z-index: 1;
+    }
+
+    .pan-handle-hole {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 12px;
+      height: 12px;
+      background: var(--bg-cream);
+      border-radius: 50%;
+    }
+
+    /* Grill surface lines */
+    .grill-ridges {
+      position: absolute;
+      inset: 12px;
+      border-radius: 50%;
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.02) 0,
+        rgba(255,255,255,0.02) 14px,
+        rgba(0,0,0,0.4) 14px,
+        rgba(0,0,0,0.4) 28px
+      );
+      pointer-events: none;
+    }
+
+    /* Sizzling Patty */
+    .burger-patty {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background-color: #d66853; /* Starts raw pinkish-red */
+      border: 5px solid #a84232;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.4);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background-color 0.1s linear, border-color 0.1s linear, filter 0.1s linear;
+      z-index: 5;
+    }
+
+    .burger-patty.sizzle {
+      animation: pattySizzleShake 0.1s infinite alternate ease-in-out;
+    }
+
+    @keyframes pattySizzleShake {
+      0% { transform: scale(1) translate(-1px, 1px); }
+      100% { transform: scale(1.02) translate(1px, -1px); }
+    }
+
+    .grill-marks {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+      background: repeating-linear-gradient(
+        -45deg,
+        transparent 0,
+        transparent 16px,
+        rgba(40, 20, 10, 0.7) 16px,
+        rgba(40, 20, 10, 0.7) 22px
+      );
+      border-radius: 50%;
+    }
+
+    /* Smoke / Steam particles */
+    .smoke-container {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: visible;
+      z-index: 10;
+    }
+
+    .smoke-puff {
+      position: absolute;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 50%;
+      filter: blur(4px);
+      animation: riseSmoke 1.2s ease-out forwards;
+    }
+
+    .smoke-puff.burnt {
+      background: rgba(50, 50, 50, 0.7);
+      filter: blur(6px);
+    }
+
+    @keyframes riseSmoke {
+      0% { transform: translateY(0) scale(0.5); opacity: 0.8; }
+      100% { transform: translateY(-70px) scale(2.2); opacity: 0; }
+    }
+
+    /* Grill Timing Gauge */
+    .grill-gauge-wrap {
+      width: 290px;
+      margin-top: 14px;
+      background: #fff;
+      padding: 8px 12px;
+      border-radius: 16px;
+      border: 3px solid #ffccd5;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .gauge-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .gauge-bar-track {
+      height: 18px;
+      width: 100%;
+      border-radius: 10px;
+      background: #e9ecef;
+      position: relative;
+      overflow: hidden;
+      border: 2px solid #ced4da;
+    }
+
+    .gauge-zone-raw {
+      position: absolute;
+      left: 0;
+      width: 45%;
+      height: 100%;
+      background: #ffb4a2;
+    }
+
+    .gauge-zone-perfect {
+      position: absolute;
+      left: 45%;
+      width: 35%;
+      height: 100%;
+      background: #52b788;
+      border-left: 2px dashed #fff;
+      border-right: 2px dashed #fff;
+    }
+
+    .gauge-zone-burnt {
+      position: absolute;
+      left: 80%;
+      width: 20%;
+      height: 100%;
+      background: #6c757d;
+    }
+
+    .gauge-needle {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 6px;
+      background: #d90429;
+      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+      border-radius: 3px;
+      left: 0%;
+      transform: translateX(-50%);
+      transition: left 0.05s linear;
+      z-index: 10;
+    }
+
+    .grill-btn {
+      margin-top: 10px;
+      background: linear-gradient(180deg, #ff5277, #d90429);
+      color: #fff;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      padding: 12px 36px;
+      border: none;
+      border-radius: 30px;
+      box-shadow: 0 6px 0 #8d0801, 0 10px 16px rgba(217, 4, 41, 0.35);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: transform 0.1s ease, box-shadow 0.1s ease;
+      animation: pulseBtn 1s infinite alternate ease-in-out;
+    }
+
+    @keyframes pulseBtn {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.05); }
+    }
+
+    .grill-btn:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 #8d0801;
+    }
+
+    /* Bottom Control Bar */
+    .controls-bar {
+      padding: 14px 20px;
+      background: #fff;
+      border-top: 3px solid #ffccd5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .stage-progress-box {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 16px;
+      background: #ffe5ec;
+      border-radius: 12px;
+      border: 2px solid #ffb3c1;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #ff9f1c, #ff4d6d);
+      border-radius: 10px;
+      transition: width 0.15s ease;
+    }
+
+    /* Button Primary */
+    .btn-mama {
+      background: linear-gradient(180deg, #ff7597, #ff5277);
+      color: #fff;
+      border: none;
+      border-radius: 25px;
+      padding: 10px 22px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 800;
+      box-shadow: 0 5px 0 #d9385d, 0 8px 15px rgba(255, 82, 119, 0.3);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.1s ease;
+    }
+
+    .btn-mama:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #d9385d;
+    }
+
+    .btn-mama.btn-large {
+      font-size: 20px;
+      padding: 15px 36px;
+      border-radius: 35px;
+      box-shadow: 0 8px 0 #d9385d, 0 12px 24px rgba(255, 82, 119, 0.4);
+    }
+
+    .btn-mama.btn-accent {
+      background: linear-gradient(180deg, #4cd3a1, #2ba879);
+      box-shadow: 0 6px 0 #1b7a54, 0 10px 20px rgba(43, 168, 121, 0.3);
+    }
+    .btn-mama.btn-accent:active {
+      transform: translateY(3px);
+      box-shadow: 0 2px 0 #1b7a54;
+    }
+
+    /* Overlays / Screens (Modals) */
+    .modal-overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(74, 44, 44, 0.65);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 200;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      border-radius: 32px;
+      border: 6px solid #ffccd5;
+      padding: 26px 20px 22px;
+      text-align: center;
+      box-shadow: 0 16px 36px rgba(0,0,0,0.3);
+      position: relative;
+      transform: translateY(20px) scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0) scale(1);
+    }
+
+    .mama-face-big {
+      width: 110px;
+      height: 110px;
+      margin: -70px auto 10px;
+      border-radius: 50%;
+      border: 5px solid #fff;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+      background: #ffe5ec;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+    }
+
+    .modal-desc {
+      font-size: 15px;
+      color: var(--text-dark);
+      margin-bottom: 16px;
+      line-height: 1.4;
+      font-weight: 600;
+    }
+
+    .instruction-graphic {
+      background: #fff9e6;
+      border: 3px dashed #ffc078;
+      border-radius: 20px;
+      padding: 12px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #995c00;
+    }
+
+    /* Final Result Screen Dish View */
+    .burger-display {
+      position: relative;
+      width: 220px;
+      height: 170px;
+      margin: 10px auto 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .plate {
+      position: absolute;
+      bottom: 0;
+      width: 210px;
+      height: 38px;
+      background: #ffffff;
+      border: 4px solid #ced4da;
+      border-radius: 50%;
+      box-shadow: 0 8px 14px rgba(0,0,0,0.12);
+      z-index: 1;
+    }
+
+    .burger-layer {
+      position: relative;
+      z-index: 2;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .layer-bun-top {
+      width: 145px;
+      height: 52px;
+      background: #e79b4a;
+      border-radius: 80px 80px 10px 10px;
+      border: 4px solid #b86e24;
+      box-shadow: inset 0 6px 0 rgba(255,255,255,0.3);
+      position: relative;
+      margin-bottom: -10px;
+      z-index: 8;
+    }
+
+    .sesame {
+      position: absolute;
+      width: 7px;
+      height: 4px;
+      background: #fff2c4;
+      border-radius: 50%;
+    }
+
+    .layer-tomato {
+      width: 135px;
+      height: 18px;
+      background: #e63946;
+      border-radius: 8px;
+      border: 3px solid #ba181b;
+      margin-bottom: -6px;
+      z-index: 7;
+    }
+
+    .layer-cheese {
+      width: 145px;
+      height: 16px;
+      background: #ffb703;
+      border-radius: 6px;
+      border: 3px solid #d48b00;
+      margin-bottom: -6px;
+      z-index: 6;
+      clip-path: polygon(0 0, 100% 0, 95% 100%, 75% 70%, 50% 100%, 25% 65%, 5% 100%);
+    }
+
+    .layer-patty-final {
+      width: 140px;
+      height: 34px;
+      border-radius: 14px;
+      border: 3px solid #5e3023;
+      background: #895737;
+      margin-bottom: -6px;
+      z-index: 5;
+    }
+
+    .layer-lettuce {
+      width: 150px;
+      height: 20px;
+      background: #52b788;
+      border-radius: 10px;
+      border: 3px solid #2d6a4f;
+      margin-bottom: -8px;
+      z-index: 4;
+    }
+
+    .layer-bun-bottom {
+      width: 140px;
+      height: 32px;
+      background: #e79b4a;
+      border-radius: 10px 10px 40px 40px;
+      border: 4px solid #b86e24;
+      z-index: 3;
+    }
+
+    /* Final Stars display */
+    .final-stars-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 14px 0;
+    }
+
+    .final-star {
+      font-size: 42px;
+      color: #ddd;
+      transform: scale(0.5);
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .final-star.active {
+      color: #ffb703;
+      text-shadow: 0 4px 10px rgba(255, 183, 3, 0.5);
+      transform: scale(1.15);
+    }
+
+    /* Confetti Canvas for celebration */
+    #confetti-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 300;
+    }
+
+    /* Floating speech bubble */
+    .speech-bubble {
+      background: #fff;
+      border: 3px solid var(--primary-light);
+      border-radius: 20px;
+      padding: 10px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-dark);
+      position: relative;
+      margin: 10px auto;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.06);
+    }
+
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      border-width: 0 10px 12px 10px;
+      border-style: solid;
+      border-color: transparent transparent var(--primary-light) transparent;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      body { padding: 4px; }
+      .game-card { border-radius: 24px; border-width: 4px; }
+      .stage-container { min-height: 400px; padding: 10px; }
+      .cutting-board { width: 280px; height: 210px; }
+      .mixing-bowl-wrap { width: 250px; height: 250px; }
+      .mixing-bowl-outer { width: 230px; height: 230px; }
+      .mixing-bowl-inner { width: 180px; height: 180px; }
+      .batter-swirl { width: 160px; height: 160px; }
+      .swirl-direction-guide { width: 210px; height: 210px; }
+      .pan-wrapper { width: 260px; height: 230px; }
+      .frying-pan { width: 210px; height: 210px; }
+      .pan-handle { right: -65px; width: 75px; height: 24px; }
+      .burger-patty { width: 120px; height: 120px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Game Card Wrapper -->
+  <div class="game-card">
+    <!-- Top Gingham Ribbon -->
+    <div class="gingham-ribbon"></div>
+
+    <!-- HUD / Top Bar -->
+    <header class="hud-bar">
+      <div class="hud-mama-corner">
+        <div class="mama-avatar-small" id="hudMamaAvatar">
+          <!-- Cute Mama SVG Avatar -->
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <!-- Scarf / Kerchief background -->
+            <path d="M 12 40 Q 50 5 88 40 Q 95 70 85 85 Q 50 95 15 85 Z" fill="#ff4d6d" />
+            <circle cx="28" cy="24" r="4" fill="#ffffff" opacity="0.6"/>
+            <circle cx="48" cy="18" r="4" fill="#ffffff" opacity="0.6"/>
+            <circle cx="68" cy="24" r="4" fill="#ffffff" opacity="0.6"/>
+            <!-- Hair -->
+            <path d="M 22 55 Q 18 32 50 30 Q 82 32 78 55 Q 70 42 50 42 Q 30 42 22 55 Z" fill="#7f4f24"/>
+            <!-- Face -->
+            <ellipse cx="50" cy="58" rx="27" ry="24" fill="#fed0bb"/>
+            <!-- Cheeks blush -->
+            <circle cx="34" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+            <circle cx="66" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+            <!-- Happy Eyes -->
+            <path d="M 32 54 Q 38 48 44 54" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 56 54 Q 62 48 68 54" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+            <!-- Smile -->
+            <path d="M 44 65 Q 50 72 56 65" fill="none" stroke="#ba181b" stroke-width="3" stroke-linecap="round"/>
+            <!-- Cute Bandana knot -->
+            <ellipse cx="50" cy="22" rx="10" ry="6" fill="#ff758f"/>
+          </svg>
+        </div>
+        <div class="hud-title-box">
+          <h1 id="recipeTitle">Burger Mama</h1>
+          <span class="hud-step-badge" id="hudStepBadge">Tahap 1: Potong Bahan</span>
+        </div>
+      </div>
+
+      <div class="hud-stats">
+        <div class="star-counter">
+          <span class="star-icon">⭐</span>
+          <span id="starScoreDisplay">0</span>
+        </div>
+        <button class="sound-btn" id="soundToggleBtn" title="Toggle Sound" aria-label="Toggle Sound">🔊</button>
+      </div>
+    </header>
+
+    <!-- Timer Bar -->
+    <div class="timer-wrap" id="timerWrap">
+      <span class="timer-label">⏱️ WAKTU</span>
+      <div class="timer-track">
+        <div class="timer-bar" id="timerBar"></div>
+      </div>
+      <span class="timer-val" id="timerVal">10s</span>
+    </div>
+
+    <!-- Active Stage Interactive Area -->
+    <main class="stage-container" id="stageContainer">
+      <!-- Instruction Banner -->
+      <div class="stage-prompt" id="stagePrompt">
+        <span id="promptIcon">🔪</span> <span id="promptText">Ketuk cepat untuk memotong!</span>
+      </div>
+
+      <!-- Realtime Feedback Stamp (PERFECT! / GOOD! / BAD!) -->
+      <div class="feedback-banner" id="feedbackBanner">PERFECT!</div>
+
+      <!-- STAGE 1: CHOPPING MINIGAME -->
+      <div class="chopping-arena" id="stageChopping" style="display: flex;">
+        <div class="cutting-board" id="cuttingBoard">
+          <div class="board-groove"></div>
+          
+          <div class="food-on-board" id="foodOnBoard">
+            <div class="veggie-onion"></div>
+            <div class="meat-block" id="meatBlock">
+              <div class="meat-marbling"></div>
+              <div class="meat-marbling m2"></div>
+            </div>
+          </div>
+
+          <div class="chop-particles" id="chopParticles"></div>
+
+          <!-- Animated Chef Knife -->
+          <div class="chef-knife" id="chefKnife">
+            <div class="knife-blade">
+              <div class="knife-edge"></div>
+            </div>
+            <div class="knife-handle"></div>
+          </div>
+        </div>
+
+        <div class="chop-guide-arrow">
+          <span>👆</span> <span>Ketuk papan secepat mungkin!</span>
+        </div>
+      </div>
+
+      <!-- STAGE 2: STIRRING / MIXING MINIGAME -->
+      <div class="stirring-arena" id="stageStirring" style="display: none;">
+        <div class="mixing-bowl-wrap" id="bowlWrapper">
+          <div class="swirl-direction-guide"></div>
+
+          <div class="mixing-bowl-outer">
+            <div class="mixing-bowl-inner">
+              <div class="batter-swirl" id="batterSwirl">
+                <div class="batter-rings batter-ring-1"></div>
+                <div class="batter-rings batter-ring-2"></div>
+                <div class="batter-bits" style="top: 30px; left: 60px;"></div>
+                <div class="batter-bits" style="bottom: 40px; right: 50px;"></div>
+                <div class="batter-bits" style="top: 80px; right: 30px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Spoon / Whisk -->
+          <div class="mixing-spoon" id="mixingSpoon">
+            <div class="spoon-head"></div>
+          </div>
+        </div>
+
+        <div class="chop-guide-arrow" style="margin-top: 14px;">
+          <span>🔄</span> <span>Putar melingkar di dalam mangkuk!</span>
+        </div>
+      </div>
+
+      <!-- STAGE 3: GRILLING MINIGAME -->
+      <div class="grill-arena" id="stageGrill" style="display: none;">
+        <div class="pan-wrapper">
+          <div class="pan-handle">
+            <div class="pan-handle-hole"></div>
+          </div>
+          <div class="frying-pan" id="fryingPan">
+            <div class="grill-ridges"></div>
+            
+            <!-- Sizzling burger patty -->
+            <div class="burger-patty" id="burgerPatty">
+              <div class="grill-marks" id="grillMarks"></div>
+            </div>
+
+            <!-- Smoke layer -->
+            <div class="smoke-container" id="smokeContainer"></div>
+          </div>
+        </div>
+
+        <!-- Gauge Bar -->
+        <div class="grill-gauge-wrap">
+          <div class="gauge-labels">
+            <span style="color: #d66853;">Mentah</span>
+            <span style="color: #2d6a4f;">Matang Sempurna!</span>
+            <span style="color: #495057;">Gosong</span>
+          </div>
+          <div class="gauge-bar-track">
+            <div class="gauge-zone-raw"></div>
+            <div class="gauge-zone-perfect"></div>
+            <div class="gauge-zone-burnt"></div>
+            <div class="gauge-needle" id="grillGaugeNeedle"></div>
+          </div>
+        </div>
+
+        <!-- Big Action Button -->
+        <button class="grill-btn" id="servePattyBtn">
+          <span>🍳</span> <span>ANGKAT SEKARANG!</span>
+        </button>
+      </div>
+    </main>
+
+    <!-- Bottom Controls & Progress Bar -->
+    <footer class="controls-bar" id="controlsBar">
+      <div class="stage-progress-box">
+        <div class="progress-text">
+          <span id="progressLabel">Progres Memotong</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Canvas for Confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- ========================================================
+         MODAL 1: START SCREEN (INTRO)
+         ======================================================== -->
+    <div class="modal-overlay active" id="modalStart">
+      <div class="modal-card">
+        <div class="mama-face-big">
+          <!-- Mama Smiling Face -->
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <path d="M 12 40 Q 50 5 88 40 Q 95 70 85 85 Q 50 95 15 85 Z" fill="#ff4d6d" />
+            <path d="M 22 55 Q 18 32 50 30 Q 82 32 78 55 Q 70 42 50 42 Q 30 42 22 55 Z" fill="#7f4f24"/>
+            <ellipse cx="50" cy="58" rx="27" ry="24" fill="#fed0bb"/>
+            <circle cx="34" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+            <circle cx="66" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+            <path d="M 32 54 Q 38 48 44 54" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 56 54 Q 62 48 68 54" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+            <path d="M 42 64 Q 50 74 58 64 Z" fill="#ba181b"/>
+            <ellipse cx="50" cy="22" rx="10" ry="6" fill="#ff758f"/>
+          </svg>
+        </div>
+
+        <h2 class="modal-title">Dapur Mama</h2>
+        <p class="modal-desc">Halo Koki Cilik! Hari ini kita akan memasak <strong>Burger Lezat Spesial</strong> bersama Mama. Siap buktikan keahlianmu?</p>
+
+        <div class="instruction-graphic">
+          <span>🔪 Potong</span> ➔ <span>🥣 Aduk</span> ➔ <span>🍳 Panggang</span>
+        </div>
+
+        <button class="btn-mama btn-large" id="startGameBtn">
+          <span>✨</span> Mulai Memasak!
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL 2: STAGE INTRO MODAL
+         ======================================================== -->
+    <div class="modal-overlay" id="modalStageIntro">
+      <div class="modal-card">
+        <div class="mama-face-big" id="stageIntroMamaFace">
+          <!-- Mama Cheerful -->
+          <svg viewBox="0 0 100 100" width="100%" height="100%">
+            <path d="M 12 40 Q 50 5 88 40 Q 95 70 85 85 Q 50 95 15 85 Z" fill="#ff4d6d" />
+            <ellipse cx="50" cy="58" rx="27" ry="24" fill="#fed0bb"/>
+            <circle cx="34" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+            <circle cx="66" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+            <circle cx="38" cy="53" r="3.5" fill="#4a2c2c"/>
+            <circle cx="62" cy="53" r="3.5" fill="#4a2c2c"/>
+            <path d="M 44 65 Q 50 72 56 65" fill="none" stroke="#ba181b" stroke-width="3" stroke-linecap="round"/>
+            <ellipse cx="50" cy="22" rx="10" ry="6" fill="#ff758f"/>
+          </svg>
+        </div>
+
+        <h2 class="modal-title" id="stageIntroTitle">Tahap 1: Memotong Daging</h2>
+        <p class="modal-desc" id="stageIntroDesc">Ketuk atau klik papan pemotong secepat mungkin sebelum waktu habis!</p>
+
+        <div class="instruction-graphic" id="stageIntroGraphic">
+          <span style="font-size: 24px;">👆</span>
+          <span>Klik/Ketuk berulang kali!</span>
+        </div>
+
+        <button class="btn-mama btn-large btn-accent" id="beginStageBtn">
+          <span>Siap!</span> Mulai!
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL 3: STAGE RESULT MODAL
+         ======================================================== -->
+    <div class="modal-overlay" id="modalStageResult">
+      <div class="modal-card">
+        <div class="mama-face-big" id="stageResultMamaFace"></div>
+
+        <h2 class="modal-title" id="stageResultRating">PERFECT!</h2>
+        
+        <div class="speech-bubble" id="stageResultSpeech">
+          "Luar biasa! Potongan dagingmu rapi sekali!"
+        </div>
+
+        <div class="final-stars-row" id="stageResultStars">
+          <span class="final-star active">⭐</span>
+          <span class="final-star active">⭐</span>
+          <span class="final-star active">⭐</span>
+        </div>
+
+        <button class="btn-mama btn-large btn-accent" id="nextStageBtn">
+          Lanjut ke Tahap Berikutnya ➔
+        </button>
+      </div>
+    </div>
+
+    <!-- ========================================================
+         MODAL 4: FINAL GAME OVER / RESULT SCREEN
+         ======================================================== -->
+    <div class="modal-overlay" id="modalFinalResult">
+      <div class="modal-card">
+        <div class="mama-face-big" id="finalMamaFace"></div>
+
+        <h2 class="modal-title" id="finalTitle">Burger Lezat Siap!</h2>
+        
+        <!-- Burger Assembly Visual -->
+        <div class="burger-display" id="burgerFinalDisplay">
+          <div class="plate"></div>
+          <div class="burger-layer layer-bun-top" id="layerBunTop">
+            <span class="sesame" style="top: 12px; left: 30px;"></span>
+            <span class="sesame" style="top: 8px; left: 70px;"></span>
+            <span class="sesame" style="top: 15px; left: 105px;"></span>
+          </div>
+          <div class="burger-layer layer-tomato"></div>
+          <div class="burger-layer layer-cheese"></div>
+          <div class="burger-layer layer-patty-final" id="layerPattyFinal"></div>
+          <div class="burger-layer layer-lettuce"></div>
+          <div class="burger-layer layer-bun-bottom"></div>
+        </div>
+
+        <div class="final-stars-row" id="finalStarsRow">
+          <span class="final-star" id="star1">⭐</span>
+          <span class="final-star" id="star2">⭐</span>
+          <span class="final-star" id="star3">⭐</span>
+        </div>
+
+        <div class="speech-bubble" id="finalSpeech">
+          "Bahkan lebih enak dari buatan Mama! Kamu Koki Bintang 5!"
+        </div>
+
+        <button class="btn-mama btn-large" id="playAgainBtn" style="margin-top: 10px;">
+          <span>🔄</span> Main Lagi!
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /* ==========================================================
+       COOKING MAMA WEB GAME ENGINE
+       Pure JavaScript with Web Audio API Synthesizer
+       ========================================================== */
+
+    // Sound Synthesizer via Web Audio API
+    class MamaSoundEngine {
+      constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.sizzleOsc = null;
+        this.sizzleGain = null;
+      }
+
+      initContext() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx && this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      toggleSound() {
+        this.enabled = !this.enabled;
+        if (!this.enabled && this.sizzleGain) {
+          this.stopSizzle();
+        }
+        return this.enabled;
+      }
+
+      // 1. Chopping Knife Sound (Thud + sharp click)
+      playChop() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const now = this.ctx.currentTime;
+        
+        // Low wood thud
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(140, now);
+        osc.frequency.exponentialRampToValueAtTime(30, now + 0.08);
+
+        gain.gain.setValueAtTime(0.7, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.08);
+
+        // High knife click (metal transient)
+        const snapOsc = this.ctx.createOscillator();
+        const snapGain = this.ctx.createGain();
+        snapOsc.type = 'square';
+        snapOsc.frequency.setValueAtTime(1800, now);
+        snapOsc.frequency.exponentialRampToValueAtTime(200, now + 0.03);
+
+        snapGain.gain.setValueAtTime(0.25, now);
+        snapGain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+
+        snapOsc.connect(snapGain);
+        snapGain.connect(this.ctx.destination);
+
+        snapOsc.start(now);
+        snapOsc.stop(now + 0.03);
+      }
+
+      // 2. Stirring Wet Swoosh
+      playStir() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(320 + Math.random() * 80, now);
+        osc.frequency.exponentialRampToValueAtTime(180, now + 0.12);
+
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.12);
+      }
+
+      // 3. Pan Sizzle Sound (synthesized white/pink noise loop)
+      startSizzle() {
+        if (!this.enabled) return;
+        this.initContext();
+        if (this.sizzleOsc) return;
+
+        const bufferSize = this.ctx.sampleRate * 1.5;
+        const buffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+        const data = buffer.getChannelData(0);
+        let lastOut = 0.0;
+
+        for (let i = 0; i < bufferSize; i++) {
+          const white = Math.random() * 2 - 1;
+          data[i] = (lastOut + (0.02 * white)) / 1.02;
+          lastOut = data[i];
+          data[i] *= 3.5; // Gain boost
+        }
+
+        const noise = this.ctx.createBufferSource();
+        noise.buffer = buffer;
+        noise.loop = true;
+
+        // Bandpass filter to make it sound like sizzling butter/meat
+        const filter = this.ctx.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(2400, this.ctx.currentTime);
+        filter.Q.setValueAtTime(1.2, this.ctx.currentTime);
+
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.22, this.ctx.currentTime);
+
+        noise.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        noise.start(0);
+        this.sizzleOsc = noise;
+        this.sizzleGain = gain;
+      }
+
+      stopSizzle() {
+        if (this.sizzleOsc) {
+          try {
+            this.sizzleOsc.stop();
+            this.sizzleOsc.disconnect();
+          } catch(e) {}
+          this.sizzleOsc = null;
+          this.sizzleGain = null;
+        }
+      }
+
+      // 4. Perfect Bell Ding / Chime
+      playPerfect() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const now = this.ctx.currentTime + (idx * 0.07);
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, now);
+
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.45);
+        });
+      }
+
+      // 5. Good Jingle
+      playGood() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const notes = [440, 554.37, 659.25]; // A4, C#5, E5
+        notes.forEach((freq, idx) => {
+          const now = this.ctx.currentTime + (idx * 0.08);
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now);
+
+          gain.gain.setValueAtTime(0.3, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.35);
+        });
+      }
+
+      // 6. Bad Womp Sound
+      playBad() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(260, now);
+        osc.frequency.linearRampToValueAtTime(110, now + 0.4);
+
+        gain.gain.setValueAtTime(0.35, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.4);
+      }
+
+      // 7. Button Pop
+      playPop() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(400, now);
+        osc.frequency.exponentialRampToValueAtTime(800, now + 0.05);
+
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + 0.05);
+      }
+
+      // 8. Final Fanfare
+      playFanfare() {
+        if (!this.enabled) return;
+        this.initContext();
+
+        const chords = [
+          { f: 523.25, t: 0.0 }, // C5
+          { f: 659.25, t: 0.12 }, // E5
+          { f: 783.99, t: 0.24 }, // G5
+          { f: 1046.50, t: 0.36 }, // C6
+          { f: 1318.51, t: 0.52 } // E6
+        ];
+
+        chords.forEach(c => {
+          const now = this.ctx.currentTime + c.t;
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(c.f, now);
+
+          gain.gain.setValueAtTime(0.35, now);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+
+          osc.start(now);
+          osc.stop(now + 0.6);
+        });
+      }
+    }
+
+    // SVG Mama Face Generators for different emotions
+    const MamaFaces = {
+      happy: `
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <path d="M 12 40 Q 50 5 88 40 Q 95 70 85 85 Q 50 95 15 85 Z" fill="#ff4d6d" />
+          <path d="M 22 55 Q 18 32 50 30 Q 82 32 78 55 Q 70 42 50 42 Q 30 42 22 55 Z" fill="#7f4f24"/>
+          <ellipse cx="50" cy="58" rx="27" ry="24" fill="#fed0bb"/>
+          <circle cx="34" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+          <circle cx="66" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+          <path d="M 32 54 Q 38 48 44 54" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 56 54 Q 62 48 68 54" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 42 64 Q 50 74 58 64 Z" fill="#ba181b"/>
+          <ellipse cx="50" cy="22" rx="10" ry="6" fill="#ff758f"/>
+        </svg>
+      `,
+      stars: `
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <path d="M 12 40 Q 50 5 88 40 Q 95 70 85 85 Q 50 95 15 85 Z" fill="#ff4d6d" />
+          <path d="M 22 55 Q 18 32 50 30 Q 82 32 78 55 Q 70 42 50 42 Q 30 42 22 55 Z" fill="#7f4f24"/>
+          <ellipse cx="50" cy="58" rx="27" ry="24" fill="#fed0bb"/>
+          <circle cx="33" cy="62" r="6" fill="#ff4d6d" opacity="0.7"/>
+          <circle cx="67" cy="62" r="6" fill="#ff4d6d" opacity="0.7"/>
+          <!-- Star Eyes -->
+          <polygon points="38,47 40,51 44,52 41,55 42,59 38,57 34,59 35,55 32,52 36,51" fill="#ffb703"/>
+          <polygon points="62,47 64,51 68,52 65,55 66,59 62,57 58,59 59,55 56,52 60,51" fill="#ffb703"/>
+          <path d="M 40 64 Q 50 76 60 64 Z" fill="#ba181b"/>
+          <ellipse cx="50" cy="22" rx="10" ry="6" fill="#ff758f"/>
+        </svg>
+      `,
+      proud: `
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <path d="M 12 40 Q 50 5 88 40 Q 95 70 85 85 Q 50 95 15 85 Z" fill="#ff4d6d" />
+          <ellipse cx="50" cy="58" rx="27" ry="24" fill="#fed0bb"/>
+          <circle cx="34" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+          <circle cx="66" cy="62" r="5" fill="#ff758f" opacity="0.6"/>
+          <circle cx="38" cy="53" r="3.5" fill="#4a2c2c"/>
+          <circle cx="62" cy="53" r="3.5" fill="#4a2c2c"/>
+          <path d="M 44 65 Q 50 72 56 65" fill="none" stroke="#ba181b" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="50" cy="22" rx="10" ry="6" fill="#ff758f"/>
+        </svg>
+      `,
+      sad: `
+        <svg viewBox="0 0 100 100" width="100%" height="100%">
+          <path d="M 12 40 Q 50 5 88 40 Q 95 70 85 85 Q 50 95 15 85 Z" fill="#6c757d" />
+          <path d="M 22 55 Q 18 32 50 30 Q 82 32 78 55 Q 70 42 50 42 Q 30 42 22 55 Z" fill="#7f4f24"/>
+          <ellipse cx="50" cy="58" rx="27" ry="24" fill="#fed0bb"/>
+          <!-- Sweat drop -->
+          <path d="M 72 44 Q 76 50 72 54 Q 68 50 72 44 Z" fill="#4cc9f0"/>
+          <!-- Drooping eyes -->
+          <path d="M 32 52 Q 38 56 44 52" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+          <path d="M 56 52 Q 62 56 68 52" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+          <!-- Wavy sad mouth -->
+          <path d="M 44 68 Q 50 63 56 68" fill="none" stroke="#4a2c2c" stroke-width="3" stroke-linecap="round"/>
+          <ellipse cx="50" cy="22" rx="10" ry="6" fill="#adb5bd"/>
+        </svg>
+      `
+    };
+
+    // Confetti Celebration Engine
+    class ConfettiCannon {
+      constructor(canvasId) {
+        this.canvas = document.getElementById(canvasId);
+        this.ctx = this.canvas.getContext('2d');
+        this.particles = [];
+        this.animId = null;
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+      }
+
+      resize() {
+        this.canvas.width = this.canvas.parentElement.clientWidth;
+        this.canvas.height = this.canvas.parentElement.clientHeight;
+      }
+
+      burst() {
+        this.resize();
+        const colors = ['#ff4d6d', '#ffb703', '#52b788', '#4cc9f0', '#7209b7', '#fff'];
+        for (let i = 0; i < 70; i++) {
+          this.particles.push({
+            x: this.canvas.width / 2,
+            y: this.canvas.height / 2,
+            vx: (Math.random() - 0.5) * 12,
+            vy: (Math.random() - 0.7) * 14,
+            size: Math.random() * 8 + 4,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 12,
+            gravity: 0.35,
+            opacity: 1
+          });
+        }
+        if (!this.animId) this.animate();
+      }
+
+      animate() {
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        for (let i = this.particles.length - 1; i >= 0; i--) {
+          const p = this.particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += p.gravity;
+          p.rotation += p.rotSpeed;
+          p.opacity -= 0.012;
+
+          this.ctx.save();
+          this.ctx.translate(p.x, p.y);
+          this.ctx.rotate((p.rotation * Math.PI) / 180);
+          this.ctx.globalAlpha = Math.max(0, p.opacity);
+          this.ctx.fillStyle = p.color;
+          this.ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+          this.ctx.restore();
+
+          if (p.opacity <= 0 || p.y > this.canvas.height) {
+            this.particles.splice(i, 1);
+          }
+        }
+
+        if (this.particles.length > 0) {
+          this.animId = requestAnimationFrame(() => this.animate());
+        } else {
+          this.animId = null;
+        }
+      }
+    }
+
+    // Main Game Controller
+    class CookingMamaGame {
+      // Audio Context Auto-unlock & Sound Engine
+      constructor() {
+        this.sound = new MamaSoundEngine();
+        this.confetti = new ConfettiCannon('confetti-canvas');
+
+        // Auto unlock AudioContext on any user gesture
+        const unlockAudio = () => {
+          this.sound.initContext();
+          window.removeEventListener('pointerdown', unlockAudio);
+          window.removeEventListener('keydown', unlockAudio);
+        };
+        window.addEventListener('pointerdown', unlockAudio, { once: true });
+        window.addEventListener('keydown', unlockAudio, { once: true });
+
+        // Game State Variables
+        this.currentStage = 1; // 1: Chop, 2: Stir, 3: Grill
+        this.totalScore = 0;
+        this.stageScores = [0, 0, 0]; // Points per stage
+        this.stageStars = [0, 0, 0]; // Stars per stage (1 to 3)
+
+        // Stage 1 State (Chopping)
+        this.chopCount = 0;
+        this.targetChops = 18;
+        this.chopTimer = 10;
+        this.timerInterval = null;
+
+        // Stage 2 State (Stirring)
+        this.stirProgress = 0; // 0 to 100
+        this.targetStirDegrees = 360 * 6.5; // 6.5 complete rotations
+        this.accumulatedDegrees = 0;
+        this.lastAngle = null;
+        this.isStirring = false;
+        this.stirTimer = 12;
+
+        // Stage 3 State (Grill)
+        this.grillProgress = 0; // 0 to 100
+        this.grillInterval = null;
+        this.smokeInterval = null;
+        this.grillTimer = 10;
+        this.pattyState = 'raw'; // 'raw', 'perfect', 'burnt'
+
+        this.bindDOMElements();
+        this.setupEventListeners();
+      }
+
+      bindDOMElements() {
+        // HUD
+        this.hudMamaAvatar = document.getElementById('hudMamaAvatar');
+        this.hudStepBadge = document.getElementById('hudStepBadge');
+        this.starScoreDisplay = document.getElementById('starScoreDisplay');
+        this.soundToggleBtn = document.getElementById('soundToggleBtn');
+        this.timerBar = document.getElementById('timerBar');
+        this.timerVal = document.getElementById('timerVal');
+        this.timerWrap = document.getElementById('timerWrap');
+
+        // Stage Containers
+        this.stageContainer = document.getElementById('stageContainer');
+        this.stagePrompt = document.getElementById('stagePrompt');
+        this.promptIcon = document.getElementById('promptIcon');
+        this.promptText = document.getElementById('promptText');
+        this.feedbackBanner = document.getElementById('feedbackBanner');
+
+        this.stageChopping = document.getElementById('stageChopping');
+        this.stageStirring = document.getElementById('stageStirring');
+        this.stageGrill = document.getElementById('stageGrill');
+
+        // Stage 1 elements
+        this.cuttingBoard = document.getElementById('cuttingBoard');
+        this.meatBlock = document.getElementById('meatBlock');
+        this.chefKnife = document.getElementById('chefKnife');
+        this.chopParticles = document.getElementById('chopParticles');
+
+        // Stage 2 elements
+        this.bowlWrapper = document.getElementById('bowlWrapper');
+        this.batterSwirl = document.getElementById('batterSwirl');
+        this.mixingSpoon = document.getElementById('mixingSpoon');
+
+        // Stage 3 elements
+        this.fryingPan = document.getElementById('fryingPan');
+        this.burgerPatty = document.getElementById('burgerPatty');
+        this.grillMarks = document.getElementById('grillMarks');
+        this.smokeContainer = document.getElementById('smokeContainer');
+        this.grillGaugeNeedle = document.getElementById('grillGaugeNeedle');
+        this.servePattyBtn = document.getElementById('servePattyBtn');
+
+        // Bottom Bar
+        this.progressLabel = document.getElementById('progressLabel');
+        this.progressPercent = document.getElementById('progressPercent');
+        this.progressFill = document.getElementById('progressFill');
+
+        // Modals
+        this.modalStart = document.getElementById('modalStart');
+        this.startGameBtn = document.getElementById('startGameBtn');
+
+        this.modalStageIntro = document.getElementById('modalStageIntro');
+        this.stageIntroTitle = document.getElementById('stageIntroTitle');
+        this.stageIntroDesc = document.getElementById('stageIntroDesc');
+        this.stageIntroGraphic = document.getElementById('stageIntroGraphic');
+        this.stageIntroMamaFace = document.getElementById('stageIntroMamaFace');
+        this.beginStageBtn = document.getElementById('beginStageBtn');
+
+        this.modalStageResult = document.getElementById('modalStageResult');
+        this.stageResultMamaFace = document.getElementById('stageResultMamaFace');
+        this.stageResultRating = document.getElementById('stageResultRating');
+        this.stageResultSpeech = document.getElementById('stageResultSpeech');
+        this.stageResultStars = document.getElementById('stageResultStars');
+        this.nextStageBtn = document.getElementById('nextStageBtn');
+
+        this.modalFinalResult = document.getElementById('modalFinalResult');
+        this.finalMamaFace = document.getElementById('finalMamaFace');
+        this.finalTitle = document.getElementById('finalTitle');
+        this.finalSpeech = document.getElementById('finalSpeech');
+        this.layerPattyFinal = document.getElementById('layerPattyFinal');
+        this.playAgainBtn = document.getElementById('playAgainBtn');
+      }
+
+      setupEventListeners() {
+        // Sound toggle
+        this.soundToggleBtn.addEventListener('click', () => {
+          const isSound = this.sound.toggleSound();
+          this.soundToggleBtn.textContent = isSound ? '🔊' : '🔇';
+        });
+
+        // Start game button
+        this.startGameBtn.addEventListener('click', () => {
+          this.sound.playPop();
+          this.modalStart.classList.remove('active');
+          this.showStageIntro(1);
+        });
+
+        // Begin stage button
+        this.beginStageBtn.addEventListener('click', () => {
+          this.sound.playPop();
+          this.modalStageIntro.classList.remove('active');
+          this.startCurrentStage();
+        });
+
+        // Next stage button
+        this.nextStageBtn.addEventListener('click', () => {
+          this.sound.playPop();
+          this.modalStageResult.classList.remove('active');
+          this.showStageIntro(this.currentStage + 1);
+        });
+
+        // Play again button
+        this.playAgainBtn.addEventListener('click', () => {
+          this.sound.playPop();
+          this.modalFinalResult.classList.remove('active');
+          this.resetGame();
+          this.showStageIntro(1);
+        });
+
+        // Stage 1: Chopping Click / Tap
+        const handleChopAction = (e) => {
+          if (this.currentStage !== 1 || this.chopTimer <= 0) return;
+          e.preventDefault();
+          this.doChop();
+        };
+        this.cuttingBoard.addEventListener('pointerdown', handleChopAction);
+
+        // Stage 2: Stirring Drag / Move
+        const onStirStart = (e) => {
+          if (this.currentStage !== 2 || this.stirTimer <= 0) return;
+          this.isStirring = true;
+          this.lastAngle = this.getAngleFromBowlCenter(e);
+        };
+
+        const onStirMove = (e) => {
+          if (!this.isStirring || this.currentStage !== 2) return;
+          const currentAngle = this.getAngleFromBowlCenter(e);
+          if (this.lastAngle !== null) {
+            let delta = currentAngle - this.lastAngle;
+            // Normalize wrap around
+            if (delta > Math.PI) delta -= 2 * Math.PI;
+            if (delta < -Math.PI) delta += 2 * Math.PI;
+
+            if (Math.abs(delta) > 0.01) {
+              this.accumulatedDegrees += Math.abs(delta) * (180 / Math.PI);
+              this.updateStirringProgress(currentAngle);
+            }
+          }
+          this.lastAngle = currentAngle;
+        };
+
+        const onStirEnd = () => {
+          this.isStirring = false;
+          this.lastAngle = null;
+        };
+
+        this.bowlWrapper.addEventListener('pointerdown', onStirStart);
+        window.addEventListener('pointermove', onStirMove, { passive: false });
+        window.addEventListener('pointerup', onStirEnd);
+        window.addEventListener('pointercancel', onStirEnd);
+
+        // Stage 3: Grill Serve Button
+        this.servePattyBtn.addEventListener('click', () => {
+          if (this.currentStage !== 3) return;
+          this.finishGrilling();
+        });
+      }
+
+      // Reset Game State
+      resetGame() {
+        this.currentStage = 1;
+        this.totalScore = 0;
+        this.stageScores = [0, 0, 0];
+        this.stageStars = [0, 0, 0];
+        this.starScoreDisplay.textContent = '0';
+      }
+
+      // Show Stage Intro Modal
+      showStageIntro(stageNum) {
+        this.currentStage = stageNum;
+        this.modalStageIntro.classList.add('active');
+
+        if (stageNum === 1) {
+          this.hudStepBadge.textContent = 'Tahap 1: Potong Bahan';
+          this.stageIntroTitle.textContent = 'Tahap 1: Memotong Daging';
+          this.stageIntroDesc.textContent = 'Ketuk atau klik papan pemotong secepat mungkin sebelum waktu habis!';
+          this.stageIntroGraphic.innerHTML = `<span style="font-size: 28px;">🔪</span> <span>Ketuk papan pemotong secepat mungkin!</span>`;
+          this.stageIntroMamaFace.innerHTML = MamaFaces.proud;
+        } else if (stageNum === 2) {
+          this.hudStepBadge.textContent = 'Tahap 2: Aduk Adonan';
+          this.stageIntroTitle.textContent = 'Tahap 2: Mengaduk Adonan Daging';
+          this.stageIntroDesc.textContent = 'Gerakkan mouse atau jarimu memutar melingkar di dalam mangkuk!';
+          this.stageIntroGraphic.innerHTML = `<span style="font-size: 28px;">🥣</span> <span>Putar melingkar hingga rata!</span>`;
+          this.stageIntroMamaFace.innerHTML = MamaFaces.proud;
+        } else if (stageNum === 3) {
+          this.hudStepBadge.textContent = 'Tahap 3: Panggang Patty';
+          this.stageIntroTitle.textContent = 'Tahap 3: Memanggang Patty';
+          this.stageIntroDesc.textContent = 'Perhatikan perubahan warna daging! Tekan tombol "Angkat" saat daging berada di zona hijau sempurna!';
+          this.stageIntroGraphic.innerHTML = `<span style="font-size: 28px;">🍳</span> <span>Jangan sampai masih mentah atau gosong!</span>`;
+          this.stageIntroMamaFace.innerHTML = MamaFaces.happy;
+        }
+      }
+
+      // Start Minigame
+      startCurrentStage() {
+        // Toggle stage visibility
+        this.stageChopping.style.display = this.currentStage === 1 ? 'flex' : 'none';
+        this.stageStirring.style.display = this.currentStage === 2 ? 'flex' : 'none';
+        this.stageGrill.style.display = this.currentStage === 3 ? 'flex' : 'none';
+
+        if (this.currentStage === 1) {
+          this.initStage1();
+        } else if (this.currentStage === 2) {
+          this.initStage2();
+        } else if (this.currentStage === 3) {
+          this.initStage3();
+        }
+      }
+
+      /* ========================================================
+         STAGE 1 LOGIC: CHOPPING
+         ======================================================== */
+      initStage1() {
+        this.chopCount = 0;
+        this.targetChops = 18;
+        this.chopTimer = 10;
+        this.progressLabel.textContent = 'Progres Memotong';
+        this.updateProgress(0);
+        this.promptIcon.textContent = '🔪';
+        this.promptText.textContent = 'Ketuk cepat untuk memotong!';
+
+        // Reset meat appearance
+        this.meatBlock.style.transform = 'scale(1)';
+        this.meatBlock.style.borderRadius = '24px';
+        this.chopParticles.innerHTML = '';
+
+        this.startStageTimer(10, (timeLeft) => {
+          this.chopTimer = timeLeft;
+        }, () => {
+          // Timer finished
+          this.finishStage1(false);
+        });
+      }
+
+      doChop() {
+        if (this.chopCount >= this.targetChops) return;
+
+        this.chopCount++;
+        this.sound.playChop();
+
+        // Knife animation
+        this.chefKnife.classList.add('chop-down');
+        this.cuttingBoard.classList.add('hit');
+        this.hudMamaAvatar.classList.add('bounce');
+
+        setTimeout(() => {
+          this.chefKnife.classList.remove('chop-down');
+          this.cuttingBoard.classList.remove('hit');
+          this.hudMamaAvatar.classList.remove('bounce');
+        }, 80);
+
+        // Spawn flying slice bit
+        this.spawnSliceParticle();
+
+        // Deform meat block progressively
+        const progress = (this.chopCount / this.targetChops);
+        this.updateProgress(progress * 100);
+
+        // Visual change to meat (turns into ground chunks)
+        const scaleX = 1 - (progress * 0.15);
+        const scaleY = 1 - (progress * 0.1);
+        this.meatBlock.style.transform = `scale(${scaleX}, ${scaleY})`;
+        if (progress > 0.4) {
+          this.meatBlock.style.borderRadius = '14px';
+        }
+        if (progress > 0.75) {
+          this.meatBlock.style.borderRadius = '8px';
+          this.meatBlock.style.boxShadow = 'inset 0 4px 6px rgba(0,0,0,0.3)';
+        }
+
+        // Check completion
+        if (this.chopCount >= this.targetChops) {
+          this.finishStage1(true);
+        }
+      }
+
+      spawnSliceParticle() {
+        const bit = document.createElement('div');
+        bit.className = 'slice-bit';
+        const size = Math.random() * 14 + 8;
+        bit.style.width = `${size}px`;
+        bit.style.height = `${size * 0.7}px`;
+        bit.style.left = `${140 + (Math.random() - 0.5) * 60}px`;
+        bit.style.top = `${90 + (Math.random() - 0.5) * 40}px`;
+        bit.style.setProperty('--tx', `${(Math.random() - 0.5) * 120}px`);
+        bit.style.setProperty('--ty', `${-(Math.random() * 80 + 30)}px`);
+        bit.style.setProperty('--rot', `${(Math.random() - 0.5) * 360}deg`);
+
+        this.chopParticles.appendChild(bit);
+        setTimeout(() => bit.remove(), 400);
+      }
+
+      finishStage1(completed) {
+        clearInterval(this.timerInterval);
+
+        let rating = 'BAD!';
+        let stars = 1;
+        let speech = '"Jangan menyerah! Coba lebih cepat lagi ya!"';
+        let face = MamaFaces.sad;
+
+        if (completed) {
+          if (this.chopTimer >= 4.5) {
+            rating = 'PERFECT!';
+            stars = 3;
+            speech = '"Luar biasa! Potongan dagingmu sangat cepat & rapi!"';
+            face = MamaFaces.stars;
+            this.sound.playPerfect();
+          } else {
+            rating = 'GOOD!';
+            stars = 2;
+            speech = '"Bagus sekali! Daging sudah terpotong dengan baik!"';
+            face = MamaFaces.happy;
+            this.sound.playGood();
+          }
+        } else {
+          this.sound.playBad();
+        }
+
+        this.showFeedbackBanner(rating);
+        this.stageStars[0] = stars;
+        this.stageScores[0] = stars * 100;
+        this.updateTotalStars();
+
+        setTimeout(() => {
+          this.showStageResult(rating, speech, stars, face);
+        }, 1100);
+      }
+
+      /* ========================================================
+         STAGE 2 LOGIC: STIRRING / MIXING
+         ======================================================== */
+      initStage2() {
+        this.accumulatedDegrees = 0;
+        this.stirProgress = 0;
+        this.stirTimer = 12;
+        this.isStirring = false;
+        this.lastAngle = null;
+        this.progressLabel.textContent = 'Progres Mengaduk';
+        this.updateProgress(0);
+        this.promptIcon.textContent = '🥣';
+        this.promptText.textContent = 'Aduk melingkar hingga tercampur rata!';
+
+        this.startStageTimer(12, (timeLeft) => {
+          this.stirTimer = timeLeft;
+        }, () => {
+          this.finishStage2(false);
+        });
+      }
+
+      getAngleFromBowlCenter(e) {
+        const rect = this.bowlWrapper.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+        const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+        return Math.atan2(clientY - centerY, clientX - centerX);
+      }
+
+      updateStirringProgress(angle) {
+        const percent = Math.min(100, (this.accumulatedDegrees / this.targetStirDegrees) * 100);
+        this.stirProgress = percent;
+        this.updateProgress(percent);
+
+        // Sound effect (rate limited)
+        if (Math.random() < 0.35) {
+          this.sound.playStir();
+        }
+
+        // Swirl animation
+        const deg = (angle * 180) / Math.PI;
+        this.batterSwirl.style.transform = `rotate(${this.accumulatedDegrees * 1.5}deg) scale(${1 + percent * 0.001})`;
+        this.mixingSpoon.style.transform = `rotate(${deg + 90}deg)`;
+
+        // Color enrichment as it blends
+        const r = Math.floor(224 - (percent * 0.4));
+        const g = Math.floor(122 - (percent * 0.3));
+        const b = Math.floor(95 - (percent * 0.3));
+        this.batterSwirl.style.background = `radial-gradient(circle, rgb(${r},${g},${b}) 20%, #a84232 80%)`;
+
+        if (this.stirProgress >= 100) {
+          this.finishStage2(true);
+        }
+      }
+
+      finishStage2(completed) {
+        clearInterval(this.timerInterval);
+        this.isStirring = false;
+
+        let rating = 'BAD!';
+        let stars = 1;
+        let speech = '"Adonan masih agak kasar, lain kali lebih semangat ya!"';
+        let face = MamaFaces.sad;
+
+        if (completed) {
+          if (this.stirTimer >= 5.0) {
+            rating = 'PERFECT!';
+            stars = 3;
+            speech = '"Tekstur adonan sempurna! Lembut dan tercampur rata!"';
+            face = MamaFaces.stars;
+            this.sound.playPerfect();
+          } else {
+            rating = 'GOOD!';
+            stars = 2;
+            speech = '"Bagus! Adonan sudah siap untuk dipanggang!"';
+            face = MamaFaces.happy;
+            this.sound.playGood();
+          }
+        } else {
+          this.sound.playBad();
+        }
+
+        this.showFeedbackBanner(rating);
+        this.stageStars[1] = stars;
+        this.stageScores[1] = stars * 100;
+        this.updateTotalStars();
+
+        setTimeout(() => {
+          this.showStageResult(rating, speech, stars, face);
+        }, 1100);
+      }
+
+      /* ========================================================
+         STAGE 3 LOGIC: GRILLING / FRYING
+         ======================================================== */
+      initStage3() {
+        this.grillProgress = 0;
+        this.pattyState = 'raw';
+        this.progressLabel.textContent = 'Kematangan Daging';
+        this.updateProgress(0);
+        this.promptIcon.textContent = '🍳';
+        this.promptText.textContent = 'Tunggu hingga matang, lalu klik Angkat!';
+
+        // Reset patty style
+        this.burgerPatty.style.backgroundColor = '#d66853'; // raw pinkish red
+        this.burgerPatty.style.borderColor = '#a84232';
+        this.burgerPatty.style.filter = 'none';
+        this.burgerPatty.classList.add('sizzle');
+        this.grillMarks.style.opacity = '0';
+        this.grillGaugeNeedle.style.left = '0%';
+        this.smokeContainer.innerHTML = '';
+
+        // Start sizzling sound loop
+        this.sound.startSizzle();
+
+        // Start smoke emission
+        this.smokeInterval = setInterval(() => {
+          this.spawnSmokeParticle(this.grillProgress >= 80);
+        }, 300);
+
+        // Progress timer (runs smoothly over ~9 seconds)
+        const startTime = Date.now();
+        const duration = 9500; // 9.5s total cooking time before charcoal burnt
+
+        this.grillInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const pct = Math.min(100, (elapsed / duration) * 100);
+          this.grillProgress = pct;
+          this.updateProgress(pct);
+          this.grillGaugeNeedle.style.left = `${pct}%`;
+
+          // Visual transition of Patty
+          if (pct < 45) {
+            // Still raw -> medium
+            this.pattyState = 'raw';
+            const r = Math.floor(214 - pct * 1.5);
+            const g = Math.floor(104 - pct * 0.4);
+            const b = Math.floor(83 - pct * 0.5);
+            this.burgerPatty.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+            this.grillMarks.style.opacity = (pct / 45) * 0.5;
+          } else if (pct >= 45 && pct <= 80) {
+            // Perfect Zone (Golden / Juicy cooked burger)
+            this.pattyState = 'perfect';
+            this.burgerPatty.style.backgroundColor = '#7a3e23'; // rich caramelized brown
+            this.burgerPatty.style.borderColor = '#471c0c';
+            this.burgerPatty.style.boxShadow = '0 8px 18px rgba(0,0,0,0.5), inset 0 3px 6px #ffbe0b';
+            this.grillMarks.style.opacity = '0.9';
+          } else {
+            // Burnt Zone (Dark charcoal)
+            this.pattyState = 'burnt';
+            const burntRatio = (pct - 80) / 20;
+            const darkVal = Math.floor(50 - burntRatio * 30);
+            this.burgerPatty.style.backgroundColor = `rgb(${darkVal}, ${darkVal}, ${darkVal})`;
+            this.burgerPatty.style.borderColor = '#000000';
+            this.burgerPatty.style.boxShadow = '0 8px 18px rgba(0,0,0,0.6)';
+          }
+
+          if (pct >= 100) {
+            this.finishGrilling();
+          }
+        }, 60);
+      }
+
+      spawnSmokeParticle(isBurnt) {
+        const puff = document.createElement('div');
+        puff.className = `smoke-puff ${isBurnt ? 'burnt' : ''}`;
+        const size = Math.random() * 25 + 20;
+        puff.style.width = `${size}px`;
+        puff.style.height = `${size}px`;
+        puff.style.left = `${100 + (Math.random() - 0.5) * 70}px`;
+        puff.style.top = `${100 + (Math.random() - 0.5) * 60}px`;
+        this.smokeContainer.appendChild(puff);
+        setTimeout(() => puff.remove(), 1200);
+      }
+
+      finishGrilling() {
+        clearInterval(this.grillInterval);
+        clearInterval(this.smokeInterval);
+        this.sound.stopSizzle();
+        this.burgerPatty.classList.remove('sizzle');
+
+        let rating = 'GOOD!';
+        let stars = 2;
+        let speech = '"Patty burger matang dengan baik!"';
+        let face = MamaFaces.happy;
+
+        if (this.pattyState === 'perfect') {
+          rating = 'PERFECT!';
+          stars = 3;
+          speech = '"Luar biasa! Daging burger matang keemasan dan juicy!"';
+          face = MamaFaces.stars;
+          this.sound.playPerfect();
+        } else if (this.pattyState === 'raw') {
+          rating = 'BAD!';
+          stars = 1;
+          speech = '"Aduh, dagingnya masih mentah di dalam!"';
+          face = MamaFaces.sad;
+          this.sound.playBad();
+        } else if (this.pattyState === 'burnt') {
+          rating = 'BAD!';
+          stars = 1;
+          speech = '"Waduh, dagingnya gosong! Mama sampai batuk-batuk!"';
+          face = MamaFaces.sad;
+          this.sound.playBad();
+        }
+
+        this.showFeedbackBanner(rating);
+        this.stageStars[2] = stars;
+        this.stageScores[2] = stars * 100;
+        this.updateTotalStars();
+
+        setTimeout(() => {
+          this.showFinalGameOver();
+        }, 1200);
+      }
+
+      /* ========================================================
+         TIMERS & PROGRESS HELPERS
+         ======================================================== */
+      startStageTimer(seconds, onTick, onComplete) {
+        clearInterval(this.timerInterval);
+        let currentSec = seconds;
+        this.timerVal.textContent = `${currentSec}s`;
+        this.timerBar.style.width = '100%';
+
+        const startTime = Date.now();
+        const totalDuration = seconds * 1000;
+
+        this.timerInterval = setInterval(() => {
+          const elapsed = Date.now() - startTime;
+          const remaining = Math.max(0, totalDuration - elapsed);
+          const pct = (remaining / totalDuration) * 100;
+
+          this.timerBar.style.width = `${pct}%`;
+          this.timerVal.textContent = `${Math.ceil(remaining / 1000)}s`;
+
+          if (onTick) onTick(remaining / 1000);
+
+          if (remaining <= 0) {
+            clearInterval(this.timerInterval);
+            if (onComplete) onComplete();
+          }
+        }, 80);
+      }
+
+      updateProgress(percent) {
+        const rounded = Math.min(100, Math.max(0, Math.round(percent)));
+        this.progressFill.style.width = `${rounded}%`;
+        this.progressPercent.textContent = `${rounded}%`;
+      }
+
+      updateTotalStars() {
+        const totalStars = this.stageStars.reduce((a, b) => a + b, 0);
+        this.starScoreDisplay.textContent = totalStars;
+      }
+
+      showFeedbackBanner(type) {
+        this.feedbackBanner.textContent = type;
+        this.feedbackBanner.className = 'feedback-banner show';
+        if (type === 'PERFECT!') {
+          this.feedbackBanner.classList.add('feedback-perfect');
+        } else if (type === 'GOOD!') {
+          this.feedbackBanner.classList.add('feedback-good');
+        } else {
+          this.feedbackBanner.classList.add('feedback-bad');
+        }
+
+        setTimeout(() => {
+          this.feedbackBanner.classList.remove('show');
+        }, 1200);
+      }
+
+      showStageResult(rating, speech, stars, face) {
+        this.modalStageResult.classList.add('active');
+        this.stageResultRating.textContent = rating;
+        this.stageResultSpeech.textContent = speech;
+        this.stageResultMamaFace.innerHTML = face;
+
+        // Render Stars
+        let starHTML = '';
+        for (let i = 1; i <= 3; i++) {
+          starHTML += `<span class="final-star ${i <= stars ? 'active' : ''}">⭐</span>`;
+        }
+        this.stageResultStars.innerHTML = starHTML;
+      }
+
+      showFinalGameOver() {
+        this.modalFinalResult.classList.add('active');
+        const totalStarsAccumulated = this.stageStars.reduce((a, b) => a + b, 0); // Max 9 stars
+
+        // Calculate overall rating: 1 to 3 stars
+        let overallStars = 1;
+        if (totalStarsAccumulated >= 8) {
+          overallStars = 3;
+        } else if (totalStarsAccumulated >= 5) {
+          overallStars = 2;
+        } else {
+          overallStars = 1;
+        }
+
+        const star1 = document.getElementById('star1');
+        const star2 = document.getElementById('star2');
+        const star3 = document.getElementById('star3');
+
+        star1.classList.toggle('active', overallStars >= 1);
+        star2.classList.toggle('active', overallStars >= 2);
+        star3.classList.toggle('active', overallStars >= 3);
+
+        // Adjust Patty appearance in final Burger display
+        if (this.pattyState === 'burnt') {
+          this.layerPattyFinal.style.background = '#2b2b2b';
+          this.layerPattyFinal.style.borderColor = '#000000';
+        } else if (this.pattyState === 'raw') {
+          this.layerPattyFinal.style.background = '#d66853';
+          this.layerPattyFinal.style.borderColor = '#a84232';
+        } else {
+          this.layerPattyFinal.style.background = '#895737';
+          this.layerPattyFinal.style.borderColor = '#5e3023';
+        }
+
+        // Mama's reaction and speech
+        if (overallStars === 3) {
+          this.finalTitle.textContent = 'Bahkan Lebih Baik Dari Mama!';
+          this.finalSpeech.textContent = '"Luar biasa! Burger buatanmu begitu lezat, Mama sangat bangga padamu!"';
+          this.finalMamaFace.innerHTML = MamaFaces.stars;
+          this.sound.playFanfare();
+          this.confetti.burst();
+          setTimeout(() => this.confetti.burst(), 400);
+        } else if (overallStars === 2) {
+          this.finalTitle.textContent = 'Enak Sekali!';
+          this.finalSpeech.textContent = '"Hebat! Burgermu lezat sekali, sedikit lagi menuju kesempurnaan!"';
+          this.finalMamaFace.innerHTML = MamaFaces.happy;
+          this.sound.playGood();
+        } else {
+          this.finalTitle.textContent = 'Jangan Menyerah!';
+          this.finalSpeech.textContent = '"Mama akan selalu membantumu! Yuk coba buat burger lagi bersama Mama!"';
+          this.finalMamaFace.innerHTML = MamaFaces.sad;
+          this.sound.playBad();
+        }
+      }
+    }
+
+    // Initialize Game on Window Load
+    window.addEventListener('DOMContentLoaded', () => {
+      window.game = new CookingMamaGame();
+    });
+  </script>
+</body>
+</html>
